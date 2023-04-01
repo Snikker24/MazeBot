@@ -2,9 +2,11 @@ package SwingUtilities;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 public class JImagePanel extends JPanel {
@@ -14,25 +16,20 @@ public class JImagePanel extends JPanel {
 
     private static BufferedImage scale(BufferedImage src, int w, int h)
     {
+        if(w*h>0) {
+            BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            AffineTransform at = new AffineTransform();
+            at.scale(2.0, 2.0);
+            AffineTransformOp transfOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+            img = transfOp.filter(src, img);
 
-        w=Math.max(1,w);
-        h=Math.max(1,h);
 
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        int x, y;
-        int ww = src.getWidth();
-        int hh = src.getHeight();
-        int[] ys = new int[h];
-        for (y = 0; y < h; y++)
-            ys[y] = y * hh / h;
-        for (x = 0; x < w; x++) {
-            int newX = x * ww / w;
-            for (y = 0; y < h; y++) {
-                int col = src.getRGB(newX, ys[y]);
-                img.setRGB(x, y, col);
-            }
+            System.out.println("Proper scaling: "+(w==img.getWidth()&&img.getHeight()==h&&w!=src.getWidth()&&h!=src.getHeight()));
+
+            return img;
         }
-        return img;
+
+        return null;
     }
 
     public void setImage(BufferedImage img) {
@@ -40,19 +37,19 @@ public class JImagePanel extends JPanel {
 
         if (img != null) {
             this.img = img;
-            System.out.println("rescaled: " + this.getWidth() + " | " + this.getHeight());
-            this.rescaled=scale(img,this.getWidth(),this.getHeight());
+            //System.out.println("rescaled: " + this.getWidth() + " | " + this.getHeight());
+            this.rescaled=scale(this.img,this.getWidth(),this.getHeight());
 
             repaint();
         }
     }
 
     public BufferedImage getImage(){
-        return rescaled;
+        return img;
     }
 
-    public BufferedImage getRawImage(){
-        return img;
+    public BufferedImage getScaledImage(){
+        return rescaled;
     }
 
     public void setSize(int width, int height){
@@ -80,30 +77,18 @@ public class JImagePanel extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHints(hints);
 
-        if(g2d.getClipBounds().x!=this.getX()||g2d.getClipBounds().y!=this.getY()||
-                g2d.getClipBounds().width!=this.getWidth()||g2d.getClipBounds().height!=this.getHeight())
-            g2d.setClip(new Rectangle(this.getX(),this.getY(),this.getWidth(),this.getHeight()));
-        /*for(Component c:this.getComponents()){
+        g2d.setClip(new Rectangle(0,0,getParent().getWidth(),getParent().getHeight()));
 
-            if(!(c.getBackground()==null||c.getBackground().equals(new Color(0,0,0,0))))
-                a.subtract(new Area(new Rectangle(c.getX(),c.getY(),c.getWidth(),c.getHeight())));
+        if(rescaled!=null) {
 
-        }
-        */
-
-        BasicStroke stroke = new BasicStroke(1);
-        g2d.setStroke(stroke);
-
-        if(img!=null) {
-            //super.setBackground(new Color(0,0,0,0));
-            g2d.drawImage(img, this.getX(), this.getY(), this.getWidth(), this.getHeight(), null);
+            //g2d.setColor(Color.CYAN);
+            //g2d.fillRect(getX(),getY(),getWidth(),getHeight());
+            g2d.drawImage(rescaled,0,0, this.getWidth(),this.getHeight(),null);
         }
 
-        //g2d.setColor(Color.blue);
-        //g2d.drawRect(this.getBounds().x,this.getBounds().y,this.getWidth(),this.getHeight());
         g2d.setClip(null);
-        g2d.dispose();
-        System.out.println("Image drawn");
+
+        System.out.println("Image drawn at: "+this.getX()+" | "+this.getY()+" | ID: "+this.hashCode());
 
 
     }

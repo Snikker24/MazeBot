@@ -50,7 +50,7 @@ public final class MazeBot {
         sidePanel.setImage(ImageIO.read(new File("./case.png")));
         sidePanel.setLayout(new GridBagLayout());
         //menuPanel.setLayout(new BorderLayout());
-        sidePanel.setBackground(Color.RED);
+        sidePanel.setBackground(Color.blue);
         sidePanel.setForeground(Color.BLACK);
         //sidePanel.setBorder(border);
 
@@ -61,9 +61,10 @@ public final class MazeBot {
         gbc.ipady=0;
         gbc.gridwidth=3;
         gbc.gridheight=1;
-        gbc.weightx=0.5f;
-        gbc.weighty=0.5f;
+        gbc.weightx=0.1f;
+        gbc.weighty=0.1f;
         gbc.anchor=GridBagConstraints.PAGE_START;
+        gbc.insets.set(50,0,0,0);
 
         Font titleFont=null;
         Font consoleFont=null;
@@ -111,29 +112,53 @@ public final class MazeBot {
         doc.setCharacterAttributes(0,doc.getLength(),center,false);
 
         sidePanel.add(title, gbc);
-        gbc.anchor=GridBagConstraints.CENTER;
-        //;
-        gbc.weighty=1f;
-        gbc.weightx=1f;
 
-        new JImagePanel();
-        JImagePanel screenPanel;
-        screenPanel=new JImagePanel();
-        System.out.println(sidePanel.getWidth()-50+" | width");
-        screenPanel.setPreferredSize(new Dimension(sidePanel.getWidth()-50,sidePanel.getWidth()-50));
-        //screenPanel.setSize(new Dimension(sidePanel.getWidth()-50,sidePanel.getWidth()-50));
-        screenPanel.setBackground(Color.red);
-        screenPanel.setImage(ImageIO.read(screen));
-        System.out.println(screenPanel.getImage().getWidth(null)+" | "+screenPanel.getImage().getHeight(null));
+        gbc.anchor=GridBagConstraints.CENTER;
+        gbc.weighty=0.2f;
+        gbc.weightx=0.2f;
+
+        JPanel screenPanel;
+        screenPanel=new JPanel();
+        //System.out.println(sidePanel.getWidth()-50+" | width");
+        screenPanel.setPreferredSize(new Dimension(sidePanel.getWidth()-50,sidePanel.getHeight()-title.getHeight()));
+        screenPanel.setSize(screenPanel.getPreferredSize());
+        //screenPanel.setBackground(new Color(0,0,0,0));
+        screenPanel.setBackground(Color.BLACK);
+        //screenPanel.setImage(ImageIO.read(screen));
+        //System.out.println(screenPanel.getImage().getWidth()+" | "+screenPanel.getImage().getHeight(null));
         screenPanel.setBorder(border);
+        CardLayout layout=new CardLayout();
+        screenPanel.setLayout(layout);
+
+        JImagePanel screenContent=new JImagePanel();
+        screenContent.setImage(ImageIO.read(screen));
+        screenContent.setBackground(null);
+        //screenContent.setBorder(border);
+        screenContent.setSize(screenPanel.getPreferredSize());
+        screenContent.setPreferredSize(screenPanel.getPreferredSize());
+
+        screenPanel.add(screenContent,"main");
+
+        layout.show(screenPanel,"main");
+
+        //screenPanel.setBounds(new Rectangle(0,0,screenPanel.getWidth(),sidePanel.getHeight()));
+
+
 
         gbc.gridy++;
-        gbc.gridheight=3;
+        gbc.insets.set(0,0,0,0);
+        gbc.gridheight=6;
         gbc.gridwidth=3;
         gbc.fill=GridBagConstraints.NONE;
+        gbc.insets.set(0,0,0,0);
+
+        System.out.println("Actual: "+screenPanel.getX()+" | "+screenPanel.getY()+"| ID: "+screenPanel.hashCode());
+        System.out.println("Actual: "+sidePanel.getX()+" | "+sidePanel.getY()+"| ID: "+sidePanel.hashCode());
 
         sidePanel.add(screenPanel,gbc);
 
+        //((GridBagLayout)sidePanel.getLayout()).setConstraints(screenPanel,gbc);
+        System.out.println(screenPanel.getSize().toString());
 
         JButton btn=new JButton();
         btn.setFocusPainted(false);
@@ -151,15 +176,16 @@ public final class MazeBot {
         btn.setVerticalAlignment(SwingConstants.CENTER);
         btn.setOpaque(true);
 
-
+        //gbc.insets.set(100,0,0,0);
         gbc.fill=GridBagConstraints.NONE;
-        gbc.gridy+=3;
+        gbc.gridy+=6;
         gbc.gridwidth=1;
         gbc.gridheight=1;
         gbc.ipady=-20;
-        gbc.weighty=0.5f;
-        gbc.weightx=0.5f;
-        sidePanel.add(btn,gbc);
+        gbc.weighty=0.1f;
+        gbc.weightx=0.1f;
+        //sidePanel.add(btn,gbc);
+
 
         btn=new JButton();
         btn.setFocusPainted(false);
@@ -178,22 +204,27 @@ public final class MazeBot {
 
         gbc.fill=GridBagConstraints.NONE;
         gbc.gridx++;
-        sidePanel.add(btn,gbc);
+        //sidePanel.add(btn,gbc);
 
 
         frame.setResizable(false);
-
-        sidePanel.setBackground(Color.BLACK);
         sidePanel.setBounds(0,0,sidePanel.getWidth(),sidePanel.getHeight());
 
 
         JLayeredPane content=new JLayeredPane();
         content.add(mazeRender,1);
         content.add(sidePanel,0);
+
+
+
         //content.moveToFront(sidePanel);
 
         frame.setContentPane(content);
         frame.setVisible(true);
+
+        System.out.println("Final: "+screenPanel.getX()+" | "+screenPanel.getY()+"| ID: "+screenPanel.hashCode());
+        System.out.println("Final: "+sidePanel.getX()+" | "+sidePanel.getY()+"| ID: "+sidePanel.hashCode());
+
 
 
     }

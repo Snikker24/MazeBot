@@ -1,10 +1,13 @@
 package SwingUtilities;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -112,7 +115,6 @@ public class TextBoxBorder extends AbstractBorder {
 
         Area area = new Area(bubble);
         area.add(new Area(pointer));
-
         g2.setRenderingHints(hints);
 
         // Paint the BG color of the parent, everywhere outside the clip
@@ -130,16 +132,27 @@ public class TextBoxBorder extends AbstractBorder {
             g2.fillRect(0, 0, width, height);
 
             if(parent instanceof JImagePanel){
+                BufferedImage img=((JImagePanel) parent).getScaledImage();
 
-                BufferedImage img=((JImagePanel) parent).getImage();
 
-
+                //&&c.getX()+c.getWidth()<=img.getWidth()&&c.getY()+c.getHeight()<=img.getHeight()
                 if(img!=null) {
 
                     //g2.drawRect(parent.getX(), parent.getY(), parent.getWidth(), parent.getHeight());
 
-                    g2.drawImage(img, parent.getX(), parent.getY(),
-                            parent.getWidth(), parent.getHeight(), null);
+
+                    System.out.println("Coords: "+c.getX()+" | "+c.getY());
+                    System.out.println("Dim: "+c.getWidth()+" | "+c.getHeight());
+
+
+                    System.out.println("IMG-Dim: "+img.getWidth()+" | "+img.getHeight());
+
+
+                    //System.out.println("Parent: "+parent.getSize().toString());
+                    //System.out.println("Child: "+c.getSize().toString());
+                    img=img.getSubimage(c.getX(),c.getY(),c.getWidth(),c.getHeight());
+                    //g2.translate(c.getX(),c.getY());
+                    g2.drawImage(img,0, 0, null);
 
                 }
             }
@@ -150,7 +163,8 @@ public class TextBoxBorder extends AbstractBorder {
         g2.setStroke(stroke);
         g2.draw(area);
 
-        System.out.println("Border drawn");
+        if(c instanceof JImagePanel)
+            System.out.println("Border drawn for: "+c.hashCode());
 
     }
 }
