@@ -29,23 +29,35 @@ public final class MazeBot {
                 ImageIO.read(path),ImageIO.read(tile),
                 ImageIO.read(background));
 
-        frame.setSize(1920,1080);
 
-        mazeRender.setSize(frame.getSize());
-        mazeRender.setPreferredSize(new Dimension(mazeRender.getWidth(),mazeRender.getHeight()));
+        GraphicsDevice monitor=GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+        DisplayMode optimal=monitor.getDisplayModes()[0];
+
+        for(DisplayMode d: monitor.getDisplayModes()) {
+
+            if (d.getHeight() * d.getWidth() > optimal.getHeight() * optimal.getWidth())
+                optimal = d;
+
+        }
+
+        System.out.println("OPTIMAL PC RESOLUTION: "+optimal.getWidth()+" X "+optimal.getHeight());
+
+        frame.setSize(optimal.getWidth(),optimal.getHeight());
+
         mazeRender.setBackground(Color.BLUE);
+        mazeRender.setPadding(0.25f);
 
 
         frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);
-        frame.getRootPane().setWindowDecorationStyle(JRootPane.PLAIN_DIALOG);
+        //frame.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 
         TextBoxBorder border=new TextBoxBorder(null,0,25,0);
 
         JImagePanel sidePanel=new JImagePanel();
-        sidePanel.setSize(450,mazeRender.getHeight());
+        sidePanel.setSize(450, frame.getHeight());
 
         sidePanel.setImage(ImageIO.read(new File("./case.png")));
         sidePanel.setLayout(new GridBagLayout());
@@ -61,10 +73,10 @@ public final class MazeBot {
         gbc.ipady=0;
         gbc.gridwidth=3;
         gbc.gridheight=1;
-        gbc.weightx=0.1f;
-        gbc.weighty=0.1f;
-        gbc.anchor=GridBagConstraints.PAGE_START;
-        gbc.insets.set(50,0,0,0);
+        gbc.weightx=0.0f;
+        gbc.weighty=0.0f;
+        //gbc.anchor=GridBagConstraints.PAGE_START;
+        gbc.insets.set(0,0,300,0);
 
         Font titleFont=null;
         Font consoleFont=null;
@@ -97,8 +109,10 @@ public final class MazeBot {
         title.setSelectedTextColor(title.getForeground());
         title.setSelectionColor(new Color(0,0,0,0));
         title.setHighlighter(null);
+        title.getCaret().setVisible(false);
         title.getCaret().deinstall(title);
         title.setMargin(new Insets(15,0,0,0));
+        title.setBounds(new Rectangle(0,0,title.getWidth(),title.getHeight()));
 
         //title.setBorder(null);
         //title.setLineWrap(true);
@@ -111,35 +125,35 @@ public final class MazeBot {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         doc.setCharacterAttributes(0,doc.getLength(),center,false);
 
+        gbc.insets.set(0,0,0,0);
+
         sidePanel.add(title, gbc);
 
         gbc.anchor=GridBagConstraints.CENTER;
-        gbc.weighty=0.2f;
-        gbc.weightx=0.2f;
+        gbc.weighty=0.0f;
+        gbc.weightx=0.1f;
 
         JPanel screenPanel;
         screenPanel=new JPanel();
-        //System.out.println(sidePanel.getWidth()-50+" | width");
-        screenPanel.setPreferredSize(new Dimension(sidePanel.getWidth()-50,sidePanel.getHeight()-title.getHeight()));
+        screenPanel.setPreferredSize(new Dimension(sidePanel.getWidth()-50,sidePanel.getHeight()-title.getHeight()-50));
         screenPanel.setSize(screenPanel.getPreferredSize());
-        //screenPanel.setBackground(new Color(0,0,0,0));
-        screenPanel.setBackground(Color.BLACK);
-        //screenPanel.setImage(ImageIO.read(screen));
-        //System.out.println(screenPanel.getImage().getWidth()+" | "+screenPanel.getImage().getHeight(null));
+        screenPanel.setBackground(Color.RED);
         screenPanel.setBorder(border);
         CardLayout layout=new CardLayout();
         screenPanel.setLayout(layout);
+
+        System.out.println("Screen size: "+screenPanel.getWidth()+" | "+screenPanel.getHeight());
 
         JImagePanel screenContent=new JImagePanel();
         screenContent.setImage(ImageIO.read(screen));
         screenContent.setBackground(null);
         //screenContent.setBorder(border);
-        //screenContent.setSize(screenPanel.getSize());
-        screenContent.setPreferredSize(screenPanel.getSize());
+        screenContent.setSize(screenPanel.getSize());
+        //screenContent.setPreferredSize(screenPanel.getSize());
 
         System.out.println("Screen image size: "+screenContent.getScaledImage().getWidth()+" | "+screenContent.getScaledImage().getHeight());
 
-        screenPanel.add(screenContent,"main");
+        //screenPanel.add(screenContent,"main");
 
         layout.show(screenPanel,"main");
 
@@ -214,8 +228,19 @@ public final class MazeBot {
 
 
         JLayeredPane content=new JLayeredPane();
+
+        content.setSize(optimal.getWidth(),optimal.getHeight());
+
+        mazeRender.setSize(frame.getWidth()-sidePanel.getWidth(),frame.getHeight());
+        mazeRender.setPreferredSize(new Dimension(content.getWidth()-sidePanel.getWidth(),content.getHeight()));
+        mazeRender.setBounds(new Rectangle(sidePanel.getWidth(),0,mazeRender.getWidth(),mazeRender.getHeight()));
+        System.out.println("Actual maze size: "+mazeRender.getWidth()+" | "+mazeRender.getHeight());
+
+        System.out.println("Side resolution: "+sidePanel.getSize().toString());
+
         content.add(mazeRender,1);
         content.add(sidePanel,0);
+        //content.moveToFront(sidePanel);
 
 
 
@@ -226,7 +251,6 @@ public final class MazeBot {
 
         System.out.println("Final: "+screenPanel.getX()+" | "+screenPanel.getY()+"| ID: "+screenPanel.hashCode());
         System.out.println("Final: "+sidePanel.getX()+" | "+sidePanel.getY()+"| ID: "+sidePanel.hashCode());
-
 
 
     }

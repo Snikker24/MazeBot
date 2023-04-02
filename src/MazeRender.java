@@ -9,6 +9,7 @@ public class MazeRender extends JPanel {
     private Image background;
 
     private Maze maze;
+    private float padding;
 
     public MazeRender(Maze maze, Image player, Image pathBlock, Image tileBlock, Image background){
         this.maze=maze;
@@ -20,6 +21,31 @@ public class MazeRender extends JPanel {
 
     }
 
+    public void  setPadding(float padding){
+        this.padding=(Math.abs(padding));
+        this.padding-=((int)this.padding);
+    }
+
+    public float getPadding() {
+        return padding;
+    }
+
+    public void setSize(int width, int height){
+        super.setSize(width,height);
+        repaint();
+    }
+
+    public void setSize(Dimension d){
+        super.setSize(d);
+        repaint();
+    }
+
+    public void setPreferredSize(Dimension d){
+        super.setPreferredSize(d);
+        repaint();
+    }
+
+
     protected final void paintComponent(Graphics g){
 
         //super.paintComponent(g2d);
@@ -27,12 +53,32 @@ public class MazeRender extends JPanel {
 
         g.setClip(new Rectangle(this.getWidth(),this.getHeight()));
 
-        g.drawImage(background,0,0, this.getWidth()-10,this.getHeight()-10,null);
+        g.drawImage(background,0,0, this.getWidth(),this.getHeight(),null);
 
+        System.out.println("Maze resolution: "+getWidth()+"x"+getHeight());
         int posX,posY;
+        int padX,padY;
+        padX= (int) (padding*getWidth());
+        padY= (int) (padding*getHeight());
 
-        posX= Math.abs(this.getWidth()-maze.size()*80)/2;
-        posY= Math.abs(this.getHeight()-maze.size()*80)/2;
+        int cellW,cellH;
+
+        while((getWidth()-padX)%maze.size()!=0)
+            padX--;
+
+        while((getHeight()-padY)%maze.size()!=0)
+            padY--;
+
+
+        System.out.println("Padding: "+padX+" | "+padY);
+
+        cellW=Math.abs(getWidth()-padX)/maze.size();
+        cellH=Math.abs(getHeight()-padY)/maze.size();
+
+        System.out.println("Cell size: "+cellW+"|"+cellH);
+
+        posX=Math.abs(padX)/2;
+        posY=Math.abs(padY)/2;
 
         for(int i=0;i<maze.size();i++)
         {
@@ -41,24 +87,26 @@ public class MazeRender extends JPanel {
 
 
                 if(maze.getTile(i,j))
-                    g.drawImage(pathBlock,posX+i*80,posY+j*80,80,80,null);
+                    g.drawImage(pathBlock,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
                 else
-                    g.drawImage(tileBlock,posX+i*80,posY+j*80,80,80,null);
+                    g.drawImage(tileBlock,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
 
                 if(i==maze.getPositionX()&&j==maze.getPositionY())
-                    g.drawImage(player,posX+i*80+10,posY+j*80+10,60,60,null);
+                    g.drawImage(player,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
 
                 if(i==maze.getEndX()&&j==maze.getEndY()) {
 
                     Font f=new Font("sans",Font.BOLD,40);
                     g.setFont(f);
                     g.setColor(Color.RED);
-                    g.drawString("X",posX+i*80+30,posY+j*80+50);
+                    g.drawString("X",posX+i*cellW+f.getSize(),posY+j*cellH+(f.getSize()));
                 }
 
 
             }
         }
+
+        g.setClip(null);
 
     }
 
