@@ -13,8 +13,10 @@ public class JImagePanel extends JPanel {
 
     private BufferedImage img;
     private BufferedImage rescaled;
+    private boolean b=false;
+    private int x=0,y=0;
 
-    private static BufferedImage scale(BufferedImage src, int w, int h)
+    public static BufferedImage scale(BufferedImage src, int w, int h)
     {
         if(w*h>0) {
             BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -30,18 +32,31 @@ public class JImagePanel extends JPanel {
         }
 
         return null;
+
+    }
+
+
+    public void setImageFromParent(){
+
+        if(getParent() instanceof JImagePanel){
+
+            b=true;
+            this.img=((JImagePanel)(getParent())).img;
+            this.rescaled=scale(img,getWidth(),getHeight());
+
+        }
+
+
     }
 
     public void setImage(BufferedImage img) {
 
+        this.img = img;
+        //System.out.println("rescaled: " + this.getWidth() + " | " + this.getHeight());
+        if(img!=null)
+            this.rescaled = scale(this.img, this.getWidth(), this.getHeight());
 
-        if (img != null) {
-            this.img = img;
-            //System.out.println("rescaled: " + this.getWidth() + " | " + this.getHeight());
-            this.rescaled=scale(this.img,this.getWidth(),this.getHeight());
-
-            repaint();
-        }
+        repaint();
     }
 
     public BufferedImage getImage(){
@@ -55,7 +70,7 @@ public class JImagePanel extends JPanel {
     public void setSize(int width, int height){
         super.setSize(width,height);
         if(img!=null)
-        this.rescaled=scale(img,this.getWidth(),this.getHeight());
+            this.rescaled=scale(img,this.getWidth(),this.getHeight());
     }
 
     public void setSize(Dimension d){
@@ -80,16 +95,19 @@ public class JImagePanel extends JPanel {
 
         g2d.setClip(new Rectangle(0,0,getParent().getWidth(),getParent().getHeight()));
 
-        if(rescaled!=null) {
+        if(img!=null) {
 
             //g2d.setColor(Color.CYAN);
             //g2d.fillRect(getX(),getY(),getWidth(),getHeight());
-            g2d.drawImage(rescaled,0,0,null);
+            if(b)
+                g2d.drawImage(img,-getX(),-getY(),getParent().getWidth(),getParent().getHeight(),null);
+            else
+                g2d.drawImage(img,0,0,getWidth(),getHeight(),null);
         }
 
         g2d.setClip(null);
 
-        System.out.println("Image drawn at: "+this.getX()+" | "+this.getY()+" | ID: "+this.hashCode());
+        //System.out.println("Image drawn at: "+this.getX()+" | "+this.getY()+" |"+"Res: "+rescaled.getWidth()+" | "+rescaled.getHeight()+" | ID: "+this.hashCode());
 
 
     }

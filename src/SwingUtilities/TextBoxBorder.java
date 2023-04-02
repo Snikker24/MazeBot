@@ -132,7 +132,7 @@ public class TextBoxBorder extends AbstractBorder {
             g2.fillRect(0, 0, width, height);
 
             if(parent instanceof JImagePanel){
-                BufferedImage img=((JImagePanel) parent).getScaledImage();
+                BufferedImage img=((JImagePanel) parent).getImage();
 
 
                 //&&c.getX()+c.getWidth()<=img.getWidth()&&c.getY()+c.getHeight()<=img.getHeight()
@@ -147,17 +147,17 @@ public class TextBoxBorder extends AbstractBorder {
 
                     System.out.println("IMG-Dim: "+img.getWidth()+" | "+img.getHeight());
 
-
+                    //img=JImagePanel.scale(img,parent.getWidth(),parent.getHeight());
                     //System.out.println("Parent: "+parent.getSize().toString());
                     //System.out.println("Child: "+c.getSize().toString());
-                    img=img.getSubimage(c.getX(),c.getY(),c.getWidth(),c.getHeight());
+                    //img=img.getSubimage(c.getX(),c.getY(),c.getWidth(),c.getHeight());
                     //g2.translate(c.getX(),c.getY());
-                    g2.drawImage(img,0, 0, null);
+                    g2.drawImage(img,-c.getX(),-c.getY(),parent.getWidth(),parent.getHeight(),null);
+                    //g2.translate(-c.getX(),-c.getY());
 
                 }
             }
         }
-
         g2.setClip(null);
         g2.setColor(color);
         g2.setStroke(stroke);
