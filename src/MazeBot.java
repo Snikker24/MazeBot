@@ -134,8 +134,10 @@ public final class MazeBot {
         screenContent.setImage(ImageIO.read(screen));
         screenContent.setBackground(null);
         //screenContent.setBorder(border);
-        screenContent.setSize(screenPanel.getPreferredSize());
-        screenContent.setPreferredSize(screenPanel.getPreferredSize());
+        //screenContent.setSize(screenPanel.getSize());
+        screenContent.setPreferredSize(screenPanel.getSize());
+
+        System.out.println("Screen image size: "+screenContent.getScaledImage().getWidth()+" | "+screenContent.getScaledImage().getHeight());
 
         screenPanel.add(screenContent,"main");
 

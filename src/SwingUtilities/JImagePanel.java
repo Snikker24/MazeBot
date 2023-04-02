@@ -61,8 +61,9 @@ public class JImagePanel extends JPanel {
     public void setSize(Dimension d){
 
         super.setSize(d);
+
         if(img!=null)
-        this.rescaled=scale(img,this.getWidth(),this.getHeight());
+            this.rescaled=scale(img,this.getWidth(),this.getHeight());
 
     }
 
@@ -83,7 +84,7 @@ public class JImagePanel extends JPanel {
 
             //g2d.setColor(Color.CYAN);
             //g2d.fillRect(getX(),getY(),getWidth(),getHeight());
-            g2d.drawImage(rescaled,0,0, this.getWidth(),this.getHeight(),null);
+            g2d.drawImage(rescaled,0,0,null);
         }
 
         g2d.setClip(null);
