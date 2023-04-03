@@ -158,6 +158,21 @@ public class TextBoxBorder extends AbstractBorder {
                 }
             }
         }
+
+       /* if(c instanceof JImagePanel){
+
+            Rectangle rect = new Rectangle(0, 0, width, height);
+            Area borderRegion = new Area(rect);
+            borderRegion.subtract(area);
+            Area region=new Area(rect);
+            region.subtract(borderRegion);
+
+            Graphics g2d=c.getGraphics();
+            g2d.setClip(region);
+            ((JImagePanel) c).paintComponent(g2d);
+        }
+        */
+
         g2.setClip(null);
         g2.setColor(color);
         g2.setStroke(stroke);
