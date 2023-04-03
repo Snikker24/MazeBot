@@ -203,9 +203,6 @@ public class MazeBot {
 
             screen.add(commType,gbc);
 
-            JPanel commBox=new JPanel();
-            commBox.setForeground(new Color(50,200,80));
-
             JScrollPane commPanel=new JScrollPane();
             commPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             commPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
