@@ -82,11 +82,14 @@ public class Maze{
             if (nx >= 0 && nx < size && ny >= 0 && ny < size && !map[nx][ny]) {
                 map[x + dx / 2][y + dy / 2] = true;
 
+                double d=random.nextDouble();
+
+                System.out.println("Maze weight: "+d);
                 // randomly branch out or continue straight
-                if (numExitPaths > 0 && random.nextDouble() < 0.00001 && !(nx == ex && ny == ey)) {
+                if (numExitPaths > 0 && (d > 0.999f||d<0.0001f) && !(nx == ex && ny == ey)) {
                     // create an exit path
                     generateMaze(nx, ny, ex, ey, numExitPaths - 1, random);
-                } else if (random.nextDouble() >0.25) {
+                } else if (d > 0.999f||d<0.0001f) {
                     // create a dead-end path
                     generateMaze(nx, ny, x, y, 0, random);
                 } else {

@@ -141,11 +141,11 @@ public class TextBoxBorder extends AbstractBorder {
                     //g2.drawRect(parent.getX(), parent.getY(), parent.getWidth(), parent.getHeight());
 
 
-                    System.out.println("Coords: "+c.getX()+" | "+c.getY());
-                    System.out.println("Dim: "+c.getWidth()+" | "+c.getHeight());
+                    //System.out.println("Coords: "+c.getX()+" | "+c.getY());
+                    //System.out.println("Dim: "+c.getWidth()+" | "+c.getHeight());
 
 
-                    System.out.println("IMG-Dim: "+img.getWidth()+" | "+img.getHeight());
+                    //System.out.println("IMG-Dim: "+img.getWidth()+" | "+img.getHeight());
 
                     //img=JImagePanel.scale(img,parent.getWidth(),parent.getHeight());
                     //System.out.println("Parent: "+parent.getSize().toString());
@@ -177,9 +177,6 @@ public class TextBoxBorder extends AbstractBorder {
         g2.setColor(color);
         g2.setStroke(stroke);
         g2.draw(area);
-
-        if(c instanceof JImagePanel)
-            System.out.println("Border drawn for: "+c.hashCode());
 
     }
 }

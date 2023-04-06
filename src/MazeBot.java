@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import Blocks.CodeBlock;
+import Blocks.Instruction;
 import SwingUtilities.*;
 
 import static SwingUtilities.SwingFactory.*;
 
 public class MazeBot {
 
-    private static int x,y;
     private static int difficulty=12;
     private final static String player="./textures/player.png";
     private final static String tile="./textures/tile.png";
@@ -37,6 +37,8 @@ public class MazeBot {
         frame.setUndecorated(true);
         frame.setVisible(true);
 
+
+
         TextBoxBorder border=new TextBoxBorder(null,0,30,0),btnBorder=new TextBoxBorder(new Color(50,200,80),2,30,0);
 
         Font titleFont=ImportedFont(titleFontPath,35f),font=ImportedFont(fontPath,35f);
@@ -45,6 +47,9 @@ public class MazeBot {
         BufferedImage playerImg= GetImageFromPath(player),pathImg=GetImageFromPath(path)
                 ,tileImg= GetImageFromPath(tile),backgroundImg= GetImageFromPath(background),
                 sideImg=GetImageFromPath(casePath),screenImg=GetImageFromPath(screenPath);
+
+        MazeRender mazeRender=new MazeRender(new Maze(difficulty),playerImg,pathImg,tileImg,backgroundImg);
+        mazeRender.setDoubleBuffered(true);
 
         //setting up ui
 
@@ -69,7 +74,7 @@ public class MazeBot {
                 commBtn=new JButton("//Commands:"),
                 backBtn=new JButton("//Back:"),
                 addBtn=new JButton("//Add:");
-        LinkedHashMap<CodeBlock,JPanel> comms=new LinkedHashMap<>();
+        LinkedList<CodeBlock> comms=new LinkedList<>();
 
 
 
@@ -156,8 +161,44 @@ public class MazeBot {
             screen.add(backBtn,gbc);
 
 
+
+
+
             JPanel commBox=new JPanel();
+            JScrollPane commPanel=new JScrollPane(commBox);
+
             commBox.setForeground(new Color(50,200,80));
+
+            JComboBox<String> commType=new JComboBox<>();
+
+            commPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            commPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            commPanel.getVerticalScrollBar().setPreferredSize(new Dimension(0,0));
+            commPanel.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
+            commPanel.getVerticalScrollBar().setUnitIncrement(10);
+            commPanel.getHorizontalScrollBar().setUnitIncrement(10);
+            //ommPanel.setBackground(Color.black);
+            commPanel.setBorder(border);
+            commPanel.setSize(screen.getWidth(),350);
+            commPanel.setPreferredSize(commPanel.getSize());
+            commPanel.setBackground(Color.YELLOW);
+            //commPanel.getRowHeader().getView().setSize(new Dimension(0,0));
+            //commPanel.getColumnHeader().getView().setSize(new Dimension(0,0));
+            commPanel.setOpaque(false);
+
+            commBox.setBackground(Color.BLACK);
+            commBox.setSize(commPanel.getWidth(),commPanel.getHeight());
+            //commBox.setPreferredSize(commBox.getSize());
+            commBox.setBorder(null);
+            SpringLayout commLayout=new SpringLayout();
+            //commLayout.setAlignment(FlowLayout.CENTER);
+            //commLayout.setAlignOnBaseline(true);
+            commBox.setLayout(commLayout);
+            commBox.getLayout().layoutContainer(commBox);
+
+            //commPanel.add(commBox);
+            commPanel.setViewportView(commBox);
+            commPanel.getViewport().setSize(commPanel.getSize());
 
             addBtn.setBackground(new Color(50,200,80));
             addBtn.setSize(150,20);
@@ -170,6 +211,130 @@ public class MazeBot {
             addBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+
+                    Instruction i=new Instruction() {
+                        @Override
+                        protected void action() {
+
+                        }
+                    };
+
+
+                    switch((String)commType.getSelectedItem())
+                    {
+                        case "up"->{
+
+                            i=new Instruction() {
+                                @Override
+                                protected void action() {
+                                    if(mazeRender.getMaze().getPositionY()-1>=0&&mazeRender.getMaze().getPositionY()-1<mazeRender.getMaze().size())
+                                        mazeRender.getMaze().setPositionY(mazeRender.getMaze().getPositionY()-1);
+
+                                    mazeRender.paintComponent(mazeRender.getGraphics().create());
+                                    mazeRender.repaint();
+                                }
+                            };
+
+
+
+                        }
+
+                        case "down"->{
+                            i=new Instruction() {
+                                @Override
+                                protected void action() {
+                                    if(mazeRender.getMaze().getPositionY()+1>=0&&mazeRender.getMaze().getPositionY()+1<mazeRender.getMaze().size())
+                                        mazeRender.getMaze().setPositionY(mazeRender.getMaze().getPositionY() + 1);
+
+                                    //mazeRender.repaint();
+                                    mazeRender.paintComponent(mazeRender.getGraphics().create());
+                                    mazeRender.repaint();
+                                }
+                            };
+                        }
+
+                        case "left"->{
+                            i=new Instruction() {
+                                @Override
+                                protected void action() {
+
+                                    if(mazeRender.getMaze().getPositionX()-1>=0&&mazeRender.getMaze().getPositionX()-1<mazeRender.getMaze().size())
+                                        mazeRender.getMaze().setPositionX(mazeRender.getMaze().getPositionX() - 1);
+
+                                    mazeRender.paintComponent(mazeRender.getGraphics().create());
+                                    mazeRender.repaint();
+                                }
+                            };
+                        }
+
+                        case "right"->{
+                            i=new Instruction() {
+                                @Override
+                                protected void action() {
+                                    if(mazeRender.getMaze().getPositionX()+1>=0&&mazeRender.getMaze().getPositionX()+1<mazeRender.getMaze().size())
+                                        mazeRender.getMaze().setPositionX(mazeRender.getMaze().getPositionX() + 1);
+
+                                    mazeRender.paintComponent(mazeRender.getGraphics().create());
+                                    mazeRender.repaint();
+                                }
+                            };
+                        }
+
+                    }
+
+
+                    JLabel name=new JLabel((String)commType.getSelectedItem());
+                    name.setFont(font);
+                    name.setBackground(Color.YELLOW);
+                    name.setForeground(new Color(50,200,80));
+                    name.setSize(commBox.getWidth()/2,25);
+                    name.setPreferredSize(name.getSize());
+
+                    JButton deleteBtn=new JButton("//delete:");
+                    deleteBtn.setBackground(Color.BLACK);
+                    deleteBtn.setSize(name.getWidth(),50);
+                    //deleteBtn.setPreferredSize(deleteBtn.getSize());
+                    deleteBtn.setBorder(btnBorder);
+                    deleteBtn.setForeground(new Color(50,200,80));
+                    deleteBtn.setFont(font);
+                    deleteBtn.setFocusPainted(false);
+                    deleteBtn.setVerticalTextPosition(SwingConstants.CENTER);
+                    deleteBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+                    deleteBtn.setBounds(name.getWidth(),name.getY(),deleteBtn.getWidth(),deleteBtn.getHeight());
+                    //deleteBtn.setMargin(new Insets(0,-50,0,-50));
+
+
+                    comms.add(i);
+
+                    AtomicReference<Instruction> ir=new AtomicReference<>(i);
+
+                    deleteBtn.addActionListener(new ActionListener() {
+
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            comms.remove(ir.get());
+                            commBox.remove(name);
+                            commBox.remove(deleteBtn);
+                            commBox.revalidate();
+                            commPanel.setViewportView(commBox);
+                            //commPanel.revalidate();
+                        }
+                    });
+
+                    commBox.add(name);
+                    commBox.add(deleteBtn);
+
+                    commLayout.putConstraint(SpringLayout.EAST,name,0,SpringLayout.WEST,deleteBtn);
+                    commLayout.putConstraint(SpringLayout.NORTH,name,name.getHeight(),SpringLayout.NORTH,deleteBtn);
+                    //commLayout.putConstraint(SpringLayout.SOUTH,name,name.getHeight(),SpringLayout.SOUTH,deleteBtn);
+                    //commLayout.putConstraint(SpringLayout.WEST,name,name.getWidth()+deleteBtn.getWidth(),SpringLayout.EAST,deleteBtn);
+
+                    commBox.setSize(commBox.getWidth(),commBox.getHeight()+Math.max(name.getHeight(),deleteBtn.getHeight()));
+                    //commBox.setLayout(new GridLayout(comms.size(),1))
+                    commBox.revalidate();
+                    commPanel.setViewportView(commBox);
+                    commPanel.revalidate();
+                    commPanel.repaint();
 
                 }
             });
@@ -184,7 +349,6 @@ public class MazeBot {
 
             screen.add(addBtn,gbc);
 
-            JComboBox<String> commType=new JComboBox<>();
             commType.addItem("up");
             commType.addItem("down");
             commType.addItem("left");
@@ -203,20 +367,6 @@ public class MazeBot {
 
             screen.add(commType,gbc);
 
-            JScrollPane commPanel=new JScrollPane();
-            commPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            commPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-            //ommPanel.setBackground(Color.black);
-            commPanel.setBorder(border);
-            commPanel.setSize(screen.getWidth(),350);
-            commPanel.setPreferredSize(commPanel.getSize());
-            commPanel.setBackground(Color.black);
-
-            commBox.setSize(commPanel.getSize());
-            commBox.setPreferredSize(commPanel.getSize());
-            commBox.setBackground(Color.BLACK);
-
-            commPanel.setViewportView(commBox);
 
             gbc.gridx=0;
             gbc.gridy=2;
@@ -227,12 +377,77 @@ public class MazeBot {
             gbc.fill=GridBagConstraints.BOTH;
             screen.add(commPanel,gbc);
 
+
+            playBtn.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+
+                    playBtn.setEnabled(false);
+                    playBtn.setBackground(new Color(50,200,80,128));
+
+                    Thread master=new Thread(){
+                        @Override
+                        public synchronized void start() {
+                            super.start();
+
+                            try {
+                                this.wait(1000);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
+
+                            if (mazeRender.getMaze().getPositionX() == mazeRender.getMaze().getStartX()
+                                    && mazeRender.getMaze().getPositionY() == mazeRender.getMaze().getStartY()) {
+
+                                Thread t;
+                                for (CodeBlock i : comms) {
+
+                                    t = new Thread() {
+                                        public synchronized void run() {
+                                            super.run();
+                                            i.run();
+                                            //mazeRender.repaint();
+
+                                        }
+                                    };
+                                    t.start();
+
+                                    try {
+                                        this.wait(500);
+                                    } catch (InterruptedException ex) {
+                                        ex.printStackTrace();
+                                    }
+
+                                }
+
+                                if (mazeRender.getMaze().getPositionX() == mazeRender.getMaze().getEndX()
+                                        && mazeRender.getMaze().getPositionY() == mazeRender.getMaze().getEndY())
+                                    layout.show(mainPanel, "end");
+                                else {
+                                    mazeRender.getMaze().setPositionX(mazeRender.getMaze().getStartX());
+                                    mazeRender.getMaze().setPositionY(mazeRender.getMaze().getStartY());
+                                    mazeRender.repaint();
+                                }
+
+                                playBtn.setEnabled(true);
+                                playBtn.setBackground(new Color(50,200,80));
+                            }
+                        }
+                    };
+
+
+                    master.start();
+
+                }
+            });
+
         }
+
+        screen=GetScreen(card3);
 
         //setting up maze display area;
 
-
-        MazeRender mazeRender=new MazeRender(new Maze(difficulty),playerImg,pathImg,tileImg,backgroundImg);
         mazeRender.setBackground(Color.BLUE);
         mazeRender.setSize(frame.getWidth()-mainPanel.getWidth(),frame.getHeight());
         mazeRender.setPreferredSize(mazeRender.getSize());

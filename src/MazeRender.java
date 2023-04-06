@@ -46,14 +46,14 @@ public class MazeRender extends JPanel {
     }
 
 
-    protected final void paintComponent(Graphics g){
+    protected synchronized final void paintComponent(Graphics g){
 
-        //super.paintComponent(g2d);
+        Graphics2D g2d= (Graphics2D) g;
+        super.paintComponent(g2d);
 
+        g2d.setClip(new Rectangle(this.getWidth(),this.getHeight()));
 
-        g.setClip(new Rectangle(this.getWidth(),this.getHeight()));
-
-        g.drawImage(background,0,0, this.getWidth(),this.getHeight(),null);
+        g2d.drawImage(background,0,0, this.getWidth(),this.getHeight(),null);
 
         System.out.println("Maze resolution: "+getWidth()+"x"+getHeight());
         int posX,posY;
@@ -87,12 +87,12 @@ public class MazeRender extends JPanel {
 
 
                 if(maze.getTile(i,j))
-                    g.drawImage(pathBlock,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
+                    g2d.drawImage(pathBlock,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
                 else
-                    g.drawImage(tileBlock,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
+                    g2d.drawImage(tileBlock,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
 
                 if(i==maze.getPositionX()&&j==maze.getPositionY())
-                    g.drawImage(player,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
+                    g2d.drawImage(player,posX+i*cellW,posY+j*cellH,cellW,cellH,null);
 
                 if(i==maze.getEndX()&&j==maze.getEndY()) {
 
