@@ -74,9 +74,11 @@ public class MazeBot {
                 commBtn=new JButton("//Commands:"),
                 backBtn=new JButton("//Back:"),
                 addBtn=new JButton("//Add:");
-        LinkedList<CodeBlock> comms=new LinkedList<>();
+        LinkedHashMap<CodeBlock,String> comms=new LinkedHashMap<>();
 
 
+        JPanel commBox=new JPanel();
+        JScrollPane commPanel=new JScrollPane(commBox);
 
         if(screen!=null){
 
@@ -106,6 +108,7 @@ public class MazeBot {
             gbc.weighty=0.1f;
             screen.add(playBtn,gbc);
 
+
             commBtn.setBackground(new Color(50,200,80));
             commBtn.setSize(150,20);
             commBtn.setBorder(border);
@@ -121,6 +124,65 @@ public class MazeBot {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     layout.show(mainPanel,"comms");
+
+                    for(CodeBlock c:comms.keySet()){
+                        JLabel name=new JLabel(comms.get(c));
+                        name.setFont(font);
+                        name.setBackground(Color.YELLOW);
+                        name.setForeground(new Color(50,200,80));
+                        name.setSize(commBox.getWidth()/2,25);
+                        name.setPreferredSize(name.getSize());
+
+                        JButton deleteBtn=new JButton("//delete:");
+                        deleteBtn.setBackground(Color.BLACK);
+                        deleteBtn.setSize(name.getWidth(),50);
+                        deleteBtn.setPreferredSize(deleteBtn.getSize());
+                        deleteBtn.setBorder(btnBorder);
+                        deleteBtn.setForeground(new Color(50,200,80));
+                        deleteBtn.setFont(font);
+                        deleteBtn.setFocusPainted(false);
+                        deleteBtn.setVerticalTextPosition(SwingConstants.CENTER);
+                        deleteBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+                        deleteBtn.setBounds(name.getWidth(),name.getY(),deleteBtn.getWidth(),deleteBtn.getHeight());
+
+                        deleteBtn.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                comms.remove(c);
+                                commBox.remove(name);
+                                commBox.remove(deleteBtn);
+
+                                if(commBox.getHeight()>commPanel.getHeight())
+                                    commBox.setSize(commBox.getWidth(),commBox.getHeight()-name.getHeight()-deleteBtn.getHeight());
+
+                                commBox.validate();
+                                //commPanel.setViewportView(commBox);
+                                commPanel.validate();
+                                commPanel.getViewport().setSize(commPanel.getSize());
+                                commPanel.getViewport().setPreferredSize(commPanel.getSize());
+                                commBox.repaint();
+                                commPanel.repaint();
+                            }
+                        });
+
+                        commBox.add(name);
+                        commBox.add(deleteBtn);
+
+                        if(comms.size()*deleteBtn.getHeight()+comms.size()*name.getHeight()>commPanel.getHeight())
+                         commBox.setSize(commBox.getWidth(),commBox.getHeight()+name.getHeight()+deleteBtn.getHeight());
+                        //commBox.setPreferredSize(commBox.getSize());
+                    }
+
+                    commBox.setLayout(new GridLayout(2*comms.size(),1));
+                    commBox.validate();
+                    commBox.repaint();
+                    //commPanel.setViewportView(commBox);
+                    //commPanel.getViewport().setPreferredSize(commPanel.getSize());
+                    commPanel.validate();
+                    commPanel.repaint();
+                    card2.repaint();
+
 
                 }
             });
@@ -149,6 +211,9 @@ public class MazeBot {
             backBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    commBox.removeAll();
+                    commBox.setSize(commPanel.getSize());
+                    commBox.setPreferredSize(commPanel.getSize());
                     layout.show(mainPanel,"main");
                 }
             });
@@ -164,37 +229,40 @@ public class MazeBot {
 
 
 
-            JPanel commBox=new JPanel();
-            JScrollPane commPanel=new JScrollPane(commBox);
+
 
             commBox.setForeground(new Color(50,200,80));
 
             JComboBox<String> commType=new JComboBox<>();
 
-            commPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            commPanel.setSize(screen.getWidth()-100,screen.getWidth()-100);
+            commPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             commPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
             commPanel.getVerticalScrollBar().setPreferredSize(new Dimension(0,0));
             commPanel.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
             commPanel.getVerticalScrollBar().setUnitIncrement(10);
             commPanel.getHorizontalScrollBar().setUnitIncrement(10);
-            //ommPanel.setBackground(Color.black);
-            commPanel.setBorder(border);
-            commPanel.setSize(screen.getWidth(),350);
-            commPanel.setPreferredSize(commPanel.getSize());
+            //commPanel.setBackground(Color.black);
+            commPanel.setBorder(null);
+            //commPanel.setPreferredSize(commPanel.getSize());
             commPanel.setBackground(Color.YELLOW);
+            commPanel.setBounds(commPanel.getX(),commPanel.getY(),commPanel.getWidth(),commPanel.getHeight());
             //commPanel.getRowHeader().getView().setSize(new Dimension(0,0));
             //commPanel.getColumnHeader().getView().setSize(new Dimension(0,0));
             commPanel.setOpaque(false);
+            //commPanel.setCorner(ScrollPaneConstants.LOWER_RIGHT_CORNER,null);
+            commPanel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 
             commBox.setBackground(Color.BLACK);
             commBox.setSize(commPanel.getWidth(),commPanel.getHeight());
             //commBox.setPreferredSize(commBox.getSize());
-            commBox.setBorder(null);
-            SpringLayout commLayout=new SpringLayout();
+            commBox.setBorder(border);
+            GridLayout commLayout=new GridLayout(comms.size(), 2);
             //commLayout.setAlignment(FlowLayout.CENTER);
             //commLayout.setAlignOnBaseline(true);
             commBox.setLayout(commLayout);
             commBox.getLayout().layoutContainer(commBox);
+            //commBox.setBounds(commBox.getX(),commBox.getY(),commBox.getWidth(),commBox.getHeight());
 
             //commPanel.add(commBox);
             commPanel.setViewportView(commBox);
@@ -208,6 +276,7 @@ public class MazeBot {
             addBtn.setFocusPainted(false);
             addBtn.setVerticalTextPosition(SwingConstants.CENTER);
             addBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+            JImagePanel finalScreen = screen;
             addBtn.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -287,13 +356,13 @@ public class MazeBot {
                     name.setFont(font);
                     name.setBackground(Color.YELLOW);
                     name.setForeground(new Color(50,200,80));
-                    name.setSize(commBox.getWidth()/2,25);
-                    name.setPreferredSize(name.getSize());
+                    name.setSize(commBox.getWidth()/4,25);
+                    //name.setPreferredSize(name.getSize());
 
                     JButton deleteBtn=new JButton("//delete:");
                     deleteBtn.setBackground(Color.BLACK);
-                    deleteBtn.setSize(name.getWidth(),50);
-                    //deleteBtn.setPreferredSize(deleteBtn.getSize());
+                    deleteBtn.setSize(name.getWidth()*3,50);
+                    deleteBtn.setPreferredSize(deleteBtn.getSize());
                     deleteBtn.setBorder(btnBorder);
                     deleteBtn.setForeground(new Color(50,200,80));
                     deleteBtn.setFont(font);
@@ -301,10 +370,10 @@ public class MazeBot {
                     deleteBtn.setVerticalTextPosition(SwingConstants.CENTER);
                     deleteBtn.setHorizontalTextPosition(SwingConstants.CENTER);
                     deleteBtn.setBounds(name.getWidth(),name.getY(),deleteBtn.getWidth(),deleteBtn.getHeight());
-                    //deleteBtn.setMargin(new Insets(0,-50,0,-50));
+                    //deleteBtn.setMargin(new Insets(0,0,0,0));
 
 
-                    comms.add(i);
+                    comms.put(i,name.getText());
 
                     AtomicReference<Instruction> ir=new AtomicReference<>(i);
 
@@ -315,26 +384,44 @@ public class MazeBot {
                             comms.remove(ir.get());
                             commBox.remove(name);
                             commBox.remove(deleteBtn);
-                            commBox.revalidate();
+
+                            if(commBox.getHeight()>commPanel.getHeight())
+                                commBox.setSize(commBox.getWidth(),commBox.getHeight()-name.getHeight()-deleteBtn.getHeight());
+
+                            //commBox.setPreferredSize(commBox.getSize());
+                            commBox.validate();
                             commPanel.setViewportView(commBox);
-                            //commPanel.revalidate();
+                            commPanel.validate();
+                            //commPanel.getViewport().setSize(commPanel.getSize());
+                            //commPanel.getViewport().setPreferredSize(commPanel.getSize());
+
+                            commBox.repaint();
+                            commPanel.repaint();
+                            finalScreen.repaint();
                         }
                     });
 
                     commBox.add(name);
                     commBox.add(deleteBtn);
 
-                    commLayout.putConstraint(SpringLayout.EAST,name,0,SpringLayout.WEST,deleteBtn);
-                    commLayout.putConstraint(SpringLayout.NORTH,name,name.getHeight(),SpringLayout.NORTH,deleteBtn);
+                    //commLayout.putConstraint(SpringLayout.EAST,name,0,SpringLayout.WEST,deleteBtn);
+                    //commLayout.putConstraint(SpringLayout.NORTH,name,name.getHeight(),SpringLayout.NORTH,deleteBtn);
                     //commLayout.putConstraint(SpringLayout.SOUTH,name,name.getHeight(),SpringLayout.SOUTH,deleteBtn);
                     //commLayout.putConstraint(SpringLayout.WEST,name,name.getWidth()+deleteBtn.getWidth(),SpringLayout.EAST,deleteBtn);
 
-                    commBox.setSize(commBox.getWidth(),commBox.getHeight()+Math.max(name.getHeight(),deleteBtn.getHeight()));
-                    //commBox.setLayout(new GridLayout(comms.size(),1))
-                    commBox.revalidate();
-                    commPanel.setViewportView(commBox);
-                    commPanel.revalidate();
+                    if(comms.size()*deleteBtn.getHeight()+comms.size()*name.getHeight()>commPanel.getHeight())
+                        commBox.setSize(commBox.getWidth(),commBox.getHeight()+name.getHeight()+deleteBtn.getHeight());
+
+                    //commBox.setPreferredSize(commBox.getSize());
+                    commBox.setLayout(new GridLayout(comms.size()*2,1));
+                    commBox.validate();
+                    commBox.repaint();
+                    //commPanel.setViewportView(commBox);
+                    //commPanel.getViewport().setPreferredSize(commPanel.getSize());
+                    commPanel.validate();
                     commPanel.repaint();
+                    //commPanel.setViewportView(commBox);
+                    //finalScreen.repaint();
 
                 }
             });
@@ -372,8 +459,8 @@ public class MazeBot {
             gbc.gridy=2;
             gbc.ipadx=0;
             gbc.ipady=0;
-            gbc.weightx=gbc.weighty=0.6;
-            gbc.gridheight= gbc.gridwidth=2;
+            gbc.weightx=gbc.weighty=0.6f;
+            gbc.gridheight= gbc.gridwidth=4;
             gbc.fill=GridBagConstraints.BOTH;
             screen.add(commPanel,gbc);
 
@@ -401,7 +488,7 @@ public class MazeBot {
                                     && mazeRender.getMaze().getPositionY() == mazeRender.getMaze().getStartY()) {
 
                                 Thread t;
-                                for (CodeBlock i : comms) {
+                                for (CodeBlock i : comms.keySet()) {
 
                                     t = new Thread() {
                                         public synchronized void run() {
@@ -446,6 +533,8 @@ public class MazeBot {
 
         screen=GetScreen(card3);
 
+
+
         //setting up maze display area;
 
         mazeRender.setBackground(Color.BLUE);
@@ -465,6 +554,9 @@ public class MazeBot {
         content.add(mazeRender);
         frame.setContentPane(content);
 
+
+        commPanel.getGraphics().setColor(Color.BLUE);
+        commPanel.getGraphics().drawRoundRect(commPanel.getX(),commPanel.getY(),commPanel.getWidth(), commPanel.getHeight(), 20,20);
 
 
 
