@@ -169,16 +169,17 @@ public class MazeBot {
                         commBox.add(name);
                         commBox.add(deleteBtn);
 
-                        if(comms.size()*deleteBtn.getHeight()+comms.size()*name.getHeight()>commPanel.getHeight())
-                         commBox.setSize(commBox.getWidth(),commBox.getHeight()+name.getHeight()+deleteBtn.getHeight());
-                        //commBox.setPreferredSize(commBox.getSize());
+                        if(comms.size()*deleteBtn.getHeight()+comms.size()*name.getHeight()>commPanel.getHeight()) {
+                            commBox.setSize(commBox.getWidth(), commBox.getHeight() + name.getHeight() + deleteBtn.getHeight());
+                            commBox.setPreferredSize(commBox.getSize());
+                        }
                     }
 
                     commBox.setLayout(new GridLayout(2*comms.size(),1));
                     commBox.validate();
                     commBox.repaint();
                     //commPanel.setViewportView(commBox);
-                    //commPanel.getViewport().setPreferredSize(commPanel.getSize());
+                    commPanel.getViewport().setPreferredSize(commPanel.getSize());
                     commPanel.validate();
                     commPanel.repaint();
                     card2.repaint();
@@ -385,15 +386,17 @@ public class MazeBot {
                             commBox.remove(name);
                             commBox.remove(deleteBtn);
 
-                            if(commBox.getHeight()>commPanel.getHeight())
+                            if(commBox.getHeight()>commPanel.getHeight()){
                                 commBox.setSize(commBox.getWidth(),commBox.getHeight()-name.getHeight()-deleteBtn.getHeight());
+                                commBox.setPreferredSize(commBox.getSize());
+                            }
 
                             //commBox.setPreferredSize(commBox.getSize());
                             commBox.validate();
                             commPanel.setViewportView(commBox);
                             commPanel.validate();
-                            //commPanel.getViewport().setSize(commPanel.getSize());
-                            //commPanel.getViewport().setPreferredSize(commPanel.getSize());
+                            commPanel.getViewport().setSize(commPanel.getSize());
+                            commPanel.getViewport().setPreferredSize(commPanel.getSize());
 
                             commBox.repaint();
                             commPanel.repaint();
@@ -409,9 +412,10 @@ public class MazeBot {
                     //commLayout.putConstraint(SpringLayout.SOUTH,name,name.getHeight(),SpringLayout.SOUTH,deleteBtn);
                     //commLayout.putConstraint(SpringLayout.WEST,name,name.getWidth()+deleteBtn.getWidth(),SpringLayout.EAST,deleteBtn);
 
-                    if(comms.size()*deleteBtn.getHeight()+comms.size()*name.getHeight()>commPanel.getHeight())
-                        commBox.setSize(commBox.getWidth(),commBox.getHeight()+name.getHeight()+deleteBtn.getHeight());
-
+                    if(comms.size()*deleteBtn.getHeight()+comms.size()*name.getHeight()>commPanel.getHeight()) {
+                        commBox.setSize(commBox.getWidth(), commBox.getHeight() + name.getHeight() + deleteBtn.getHeight());
+                        commBox.setPreferredSize(commBox.getSize());
+                    }
                     //commBox.setPreferredSize(commBox.getSize());
                     commBox.setLayout(new GridLayout(comms.size()*2,1));
                     commBox.validate();
@@ -534,6 +538,14 @@ public class MazeBot {
         screen=GetScreen(card3);
 
 
+        if(screen!=null){
+            JLabel label=new JLabel("You win!");
+            label.setForeground(Color.GREEN);
+            label.setBackground(null);
+            label.setFont(font);
+            screen.add(label);
+
+        }
 
         //setting up maze display area;
 
