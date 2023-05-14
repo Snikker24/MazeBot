@@ -9,9 +9,6 @@ import java.io.IOException;
 
 public class SwingFactory {
 
-
-
-
     public static BufferedImage GetImageFromPath(String path){
 
         try {
